@@ -4,9 +4,12 @@ import { useState } from "react";
 import ProfileForm from "@/components/ProfileForm";
 import FavoritesTab from "@/components/FavoritesTab";
 import CurrencySelector from "@/components/CurrencySelector";
+import ComparePage from "@/app/compare/page";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<"search" | "favorites">("search");
+  const [activeTab, setActiveTab] = useState<
+    "search" | "favorites" | "compare"
+  >("search");
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-800">
@@ -25,7 +28,7 @@ export default function Home() {
         <div className="flex justify-center mb-8">
           <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700">
             <button
-              className={`px-6 py-3 rounded-l-lg ${
+              className={`px-6 py-3 ${
                 activeTab === "search"
                   ? "bg-blue-600 text-white"
                   : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -35,7 +38,7 @@ export default function Home() {
               Search Pianos
             </button>
             <button
-              className={`px-6 py-3 rounded-r-lg ${
+              className={`px-6 py-3 ${
                 activeTab === "favorites"
                   ? "bg-blue-600 text-white"
                   : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -44,10 +47,22 @@ export default function Home() {
             >
               My Favorites
             </button>
+            <button
+              className={`px-6 py-3 ${
+                activeTab === "compare"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+              }`}
+              onClick={() => setActiveTab("compare")}
+            >
+              Compare
+            </button>
           </div>
         </div>
 
-        {activeTab === "search" ? <ProfileForm /> : <FavoritesTab />}
+        {activeTab === "search" && <ProfileForm />}
+        {activeTab === "favorites" && <FavoritesTab />}
+        {activeTab === "compare" && <ComparePage />}
       </div>
     </main>
   );
