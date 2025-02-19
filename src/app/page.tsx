@@ -5,10 +5,11 @@ import ProfileForm from "@/components/ProfileForm";
 import FavoritesTab from "@/components/FavoritesTab";
 import CurrencySelector from "@/components/CurrencySelector";
 import ComparePage from "@/app/compare/page";
+import Link from "next/link";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<
-    "search" | "favorites" | "compare"
+    "search" | "favorites" | "compare" | "browse"
   >("search");
 
   return (
@@ -35,8 +36,14 @@ export default function Home() {
               }`}
               onClick={() => setActiveTab("search")}
             >
-              Search Pianos
+              Find Your Perfect Piano
             </button>
+            <Link
+              href="/pianos"
+              className={`px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800`}
+            >
+              Browse All
+            </Link>
             <button
               className={`px-6 py-3 ${
                 activeTab === "favorites"

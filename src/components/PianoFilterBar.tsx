@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Piano } from "@/types/piano";
 import { pianos } from "@/data/pianos";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface FilterOptions {
   priceRange: [number, number];
@@ -10,6 +11,7 @@ interface FilterOptions {
   brands: string[];
   keyActions: string[];
   features: string[];
+  showOnlyFavorites: boolean;
 }
 
 interface PianoFilterBarProps {
@@ -19,12 +21,15 @@ interface PianoFilterBarProps {
 export default function PianoFilterBar({
   onFilterChange,
 }: PianoFilterBarProps) {
+  const { isFavorite } = useFavorites();
+  const timeoutRef = useRef<NodeJS.Timeout>();
   const [filters, setFilters] = useState<FilterOptions>({
     priceRange: [0, Math.max(...pianos.map((p) => p.price))],
     skillLevels: [],
     brands: [],
     keyActions: [],
     features: [],
+    showOnlyFavorites: false,
   });
 
   const availableBrands = [...new Set(pianos.map((p) => p.brand))];
@@ -32,8 +37,12 @@ export default function PianoFilterBar({
     ...new Set(pianos.map((p) => p.features.keyAction)),
   ];
 
-  useEffect(() => {
+  const filterPianos = useCallback(() => {
     const filtered = pianos.filter((piano) => {
+      if (filters.showOnlyFavorites && !isFavorite(piano.id)) {
+        return false;
+      }
+
       const matchesPrice =
         piano.price >= filters.priceRange[0] &&
         piano.price <= filters.priceRange[1];
@@ -69,8 +78,28 @@ export default function PianoFilterBar({
       );
     });
 
-    onFilterChange(filtered);
-  }, [filters, onFilterChange]);
+    return filtered;
+  }, [filters, isFavorite]);
+
+  useEffect(() => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Set a new timeout to apply filters
+    timeoutRef.current = setTimeout(() => {
+      const filtered = filterPianos();
+      onFilterChange(filtered);
+    }, 100);
+
+    // Cleanup on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [filterPianos, onFilterChange]);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
@@ -79,6 +108,22 @@ export default function PianoFilterBar({
       </h2>
 
       <div className="space-y-6">
+        <div className="bg-blue-50 dark:bg-blue-900/30 -mx-6 px-6 py-4 border-l-4 border-blue-500">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={filters.showOnlyFavorites}
+              onChange={(e) =>
+                setFilters({ ...filters, showOnlyFavorites: e.target.checked })
+              }
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span className="ml-2 text-blue-700 dark:text-blue-300 font-medium">
+              Show Only Favorites
+            </span>
+          </label>
+        </div>
+
         <div>
           <h3 className="font-medium mb-2">Price Range</h3>
           <div className="flex items-center space-x-4">

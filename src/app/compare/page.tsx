@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Piano } from "@/types/piano";
 import { pianos } from "@/data/pianos";
 import PianoComparison from "@/components/PianoComparison";
@@ -12,6 +12,10 @@ export default function ComparePage() {
   const [filteredPianos, setFilteredPianos] = useState<Piano[]>(pianos);
   const { comparedPianos } = useComparison();
 
+  const handleFilterChange = useCallback((filtered: Piano[]) => {
+    setFilteredPianos(filtered);
+  }, []);
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -21,7 +25,7 @@ export default function ComparePage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">
-            <PianoFilterBar onFilterChange={setFilteredPianos} />
+            <PianoFilterBar onFilterChange={handleFilterChange} />
           </div>
 
           <div className="lg:col-span-2">
