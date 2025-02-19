@@ -5,15 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useRouter } from "next/navigation";
-import { use } from "react";
 
 interface Props {
   params: { id: string };
 }
 
 export default function PianoPage({ params }: Props) {
-  const resolvedParams = use(params);
-  const piano = pianos.find((p) => p.id === resolvedParams.id);
+  const piano = pianos.find((p) => p.id === params.id);
   const { isFavorite, toggleFavorite } = useFavorites();
   const router = useRouter();
 
